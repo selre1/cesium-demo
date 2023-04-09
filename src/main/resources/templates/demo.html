@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" >
+<head>
+	<meta charset="utf-8">
+	<title>공간정보기술(주)</title>
+	
+	 <script src="https://cesium.com/downloads/cesiumjs/releases/1.104/Build/Cesium/Cesium.js"></script>
+  	<link href="https://cesium.com/downloads/cesiumjs/releases/1.104/Build/Cesium/Widgets/widgets.css" rel="stylesheet">
+</head>
+<body>
+	<div id="cesiumContainer"></div>
+	<div class="modal fade" id="assets_viewer" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	  <div class="modal-dialog" role="document" style ="max-width: 1200px; margin: 30px auto; width: 100%;">
+	    <div class="modal-content" style = "background-color: #ffffff00;">	    
+	      <div class="modal-body">
+	      	<div class="embed-responsive embed-responsive-16by9">
+	        	<iframe id="assetIframe" class="embed-responsive-item" frameBorder="0" src=""></iframe>
+	  		</div>	  		
+	      </div>	     
+	    </div>
+	  </div>
+	</div>
+	<script type="text/javascript">
+	 const viewer = new Cesium.Viewer('cesiumContainer', {
+		shouldAnimate: true
+	 });    
+	 viewer.entities.add({
+		 	id: 'p1',		
+		    position: Cesium.Cartesian3.fromDegrees(-75.59777, 40.03883),
+		    /* point: {
+		      show: true, // default
+		      color: Cesium.Color.SKYBLUE, // default: WHITE
+		      pixelSize: 10, // default: 1
+		      outlineColor: Cesium.Color.YELLOW, // default: BLACK
+		      outlineWidth: 3, // default: 0
+		    }, */
+		    billboard :{
+		    	 image: "/image/camera.png",
+		    	 scale: 0.1
+		    },
+		    label:{
+		      text : "파노라마 촬영",
+		      font: "15px Helvetica",
+		      fillColor: Cesium.Color.WHITE,
+		      outlineWidth: 2,
+		      //horizontalOrigin :Cesium.HorizontalOrigin.RIGHT
+		      pixelOffset: new Cesium.Cartesian2(0, -30)
+		    }
+	 });
+	 
+	 viewer.entities.add({
+		 	id: 'a1',
+		 	description : "<img src=/image/roadview1.png height='400' width='400'>",
+		    position: Cesium.Cartesian3.fromDegrees(-75.59857, 40.03883),
+		    /* point: {
+		      show: true, // default
+		      color: Cesium.Color.SKYBLUE, // default: WHITE
+		      pixelSize: 10, // default: 1
+		      outlineColor: Cesium.Color.YELLOW, // default: BLACK
+		      outlineWidth: 3, // default: 0
+		    }, */
+		    billboard :{
+		    	 image: "/image/airplane.png",
+		    	 scale: 0.1
+		    },
+		    label:{
+		      text : "거리뷰",
+		      font: "15px Helvetica",
+		      fillColor: Cesium.Color.WHITE,
+		      outlineWidth: 2,
+		      //horizontalOrigin :Cesium.HorizontalOrigin.RIGHT
+		      pixelOffset: new Cesium.Cartesian2(0, -30)
+		    }
+	 });
+	 
+	 viewer.entities.add({
+		 	id: 'a2',
+		 	description : "<img src=/image/roadview2.png height='400' width='400'>",
+		    position: Cesium.Cartesian3.fromDegrees(-75.59857, 40.03983),
+		    /* point: {
+		      show: true, // default
+		      color: Cesium.Color.SKYBLUE, // default: WHITE
+		      pixelSize: 10, // default: 1
+		      outlineColor: Cesium.Color.YELLOW, // default: BLACK
+		      outlineWidth: 3, // default: 0
+		    }, */
+		    billboard :{
+		    	 image: "/image/airplane.png",
+		    	 scale: 0.1
+		    },
+		    label:{
+		      text : "거리뷰",
+		      font: "15px Helvetica",
+		      fillColor: Cesium.Color.WHITE,
+		      outlineWidth: 2,
+		      //horizontalOrigin :Cesium.HorizontalOrigin.RIGHT
+		      pixelOffset: new Cesium.Cartesian2(0, -30)
+		    }
+	 });
+	 
+	 
+	    // Fly the camera to San Francisco at the given longitude, latitude, and height.
+	 viewer.camera.flyTo({
+	      destination : Cesium.Cartesian3.fromDegrees(-75.59777, 40.03883, 1000)
+	     
+	 });
+	 var handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);   
+	 handler.setInputAction(function (movement) {
+		  // Star burst on left mouse click.
+		  var pickedObject = viewer.scene.pick(movement.position);
+		  if(pickedObject.id.id === 'p1'){
+			  window.open("http://www.naver.com", "PopupNew", "width=500,height=600");  
+		  }
+		  
+		}, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+	 
+	 
+	</script>
+</body>
+</html>
