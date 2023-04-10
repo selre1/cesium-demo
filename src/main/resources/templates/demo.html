@@ -9,24 +9,13 @@
 </head>
 <body>
 	<div id="cesiumContainer"></div>
-	<div class="modal fade" id="assets_viewer" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-	  <div class="modal-dialog" role="document" style ="max-width: 1200px; margin: 30px auto; width: 100%;">
-	    <div class="modal-content" style = "background-color: #ffffff00;">	    
-	      <div class="modal-body">
-	      	<div class="embed-responsive embed-responsive-16by9">
-	        	<iframe id="assetIframe" class="embed-responsive-item" frameBorder="0" src=""></iframe>
-	  		</div>	  		
-	      </div>	     
-	    </div>
-	  </div>
-	</div>
 	<script type="text/javascript">
 	 const viewer = new Cesium.Viewer('cesiumContainer', {
 		shouldAnimate: true
 	 });    
 	 viewer.entities.add({
 		 	id: 'p1',		
-		    position: Cesium.Cartesian3.fromDegrees(-75.59777, 40.03883),
+		    position: Cesium.Cartesian3.fromDegrees(127.67411, 36.47653),
 		    /* point: {
 		      show: true, // default
 		      color: Cesium.Color.SKYBLUE, // default: WHITE
@@ -51,7 +40,7 @@
 	 viewer.entities.add({
 		 	id: 'a1',
 		 	description : "<img src=/image/roadview1.png height='400' width='400'>",
-		    position: Cesium.Cartesian3.fromDegrees(-75.59857, 40.03883),
+		    position: Cesium.Cartesian3.fromDegrees(127.67135, 36.47633),
 		    /* point: {
 		      show: true, // default
 		      color: Cesium.Color.SKYBLUE, // default: WHITE
@@ -76,7 +65,7 @@
 	 viewer.entities.add({
 		 	id: 'a2',
 		 	description : "<img src=/image/roadview2.png height='400' width='400'>",
-		    position: Cesium.Cartesian3.fromDegrees(-75.59857, 40.03983),
+		    position: Cesium.Cartesian3.fromDegrees(127.67316, 36.47753),
 		    /* point: {
 		      show: true, // default
 		      color: Cesium.Color.SKYBLUE, // default: WHITE
@@ -101,15 +90,21 @@
 	 
 	    // Fly the camera to San Francisco at the given longitude, latitude, and height.
 	 viewer.camera.flyTo({
-	      destination : Cesium.Cartesian3.fromDegrees(-75.59777, 40.03883, 1000)
+	      destination : Cesium.Cartesian3.fromDegrees(127.67, 36.48, 2000)
 	     
 	 });
 	 var handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);   
 	 handler.setInputAction(function (movement) {
 		  // Star burst on left mouse click.
-		  var pickedObject = viewer.scene.pick(movement.position);
-		  if(pickedObject.id.id === 'p1'){
-			  window.open("http://www.naver.com", "PopupNew", "width=500,height=600");  
+		 var pickedObject = viewer.scene.pick(movement.position);
+		 if(!Cesium.defined(pickedObject)) return;
+		 if(pickedObject.id.id === 'p1'){
+			 const width = 600;
+			 const height = 600;
+			 let left = (document.body.offsetWidth / 2) - (width / 2);
+			 let tops = (document.body.offsetHeight / 2) - (height / 2);
+			 left += window.screenLeft;
+			  window.open("https://my.matterport.com/show/?m=MVsuDfMpwbX", "PopupNew", `width=${width}, height=${height}, left=${left}, top=${tops}`);
 		  }
 		  
 		}, Cesium.ScreenSpaceEventType.LEFT_CLICK);
