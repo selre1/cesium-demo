@@ -10,4 +10,10 @@ public class DemoController {
 	public String getDemoPage() {
 		return "demo";
 	}
+
+	@GetMapping("/test")
+	public String getPanorama(){
+		return "panorama";
+	}
+
 }

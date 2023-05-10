@@ -60,7 +60,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="/js/three.min.js"></script>
     <script src="/js/panolens.min.js"></script>
-    <script src="/js/jquery.ajax-cross-origin.min.js"></script>
+<!--    <script src="/js/panorama.js"></script>-->
     <script type="text/javascript">
         const viewer = new Cesium.Viewer("cesiumContainer", {
             shouldAnimate: true
@@ -99,7 +99,7 @@
             }
         });
 
-       //Fly the camera to San Francisco at the given longitude, latitude, and height.
+
         viewer.camera.flyTo({
             destination : Cesium.Cartesian3.fromDegrees(127.67286, 36.47552, 2000)
         });
@@ -107,7 +107,7 @@
 
         // 클릭시 파노라마 뷰잉
         handler.setInputAction(function (movement) {
-            // Star burst on left mouse click.
+
             var pickedObject = viewer.scene.pick(movement.position);
             if(!Cesium.defined(pickedObject)){
                 let panoramaDiv = document.getElementById("panorama");
@@ -126,7 +126,7 @@
                 window.open("https://my.matterport.com/show/?m=MVsuDfMpwbX",'popup','top=0,left=0,width='+screen.availWidth+',height='+screen.availHeight+',scrollbars=yes,status=yes');
 
             }else if(pickedObject.id.id === 'a1'){
-                window.open("https://bell0226.synology.me/%EC%83%98%ED%94%8C/%EA%B3%B5%EA%B0%84%EC%A0%95%EB%B3%B4%EA%B8%B0%EC%88%A0/bocheong_scene_10-230418-4/vtour/tour.html", 'popup','top=0,left=0,width='+screen.availWidth+',height='+screen.availHeight+',scrollbars=yes,status=yes');
+                window.open("https://bell226p.synology.me/%EC%83%98%ED%94%8C/%EA%B3%B5%EA%B0%84%EC%A0%95%EB%B3%B4%EA%B8%B0%EC%88%A0/bocheong_scene_10-230418-4/vtour/tour.html", 'popup','top=0,left=0,width='+screen.availWidth+',height='+screen.availHeight+',scrollbars=yes,status=yes');
             }
         }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
 
@@ -172,16 +172,6 @@
         var tileset = viewer.scene.primitives.add(new Cesium.Cesium3DTileset({
             show:false,
             url: '/model/tileset/tileset.json',
-            // shadows : Cesium.ShadowMode.ENABLED, //타일 표면에 그림자를 드리울지 여부. 로딩시 ENABLED가 아니면 속성 수정반영이 잘 안되었음
-            // maximumScreenSpaceError : 1, //Default 16. 세분화 수준 향상 값 : 작을수록 디테일함
-            // maximumMemoryUsage : 512, //Default 512. 개발PC기준 1024 설정시 더 불안정 했음
-            // cullWithChildrenBounds : true, //Default true. 최적화 옵션. 자식을 묶는 볼륨을 결합하여 타일을 제거할지 여부.
-            // baseScreenSpaceError : 1024, //Default 1024. skipLevelOfDetail이 true 일 때, 디테일 수준을 건너 뛰기 전에 도달해야하는 화면 공간 오류
-            // skipScreenSpaceErrorFactor : 16,
-            // skipLevelOfDetail : true,
-            // skipLevels : 1, //Default 1. skipLevelOfDetail이 true 인 경우 타일을로드 할 때 건너 뛸 최소 레벨 수를 정의하는 상수. 0이면 아무 레벨도 건너 뜀. 로드 할 타일을 결정하기 위해 skipScreenSpaceErrorFactor와 함께 사용.
-            // immediatelyLoadDesiredLevelOfDetail : false, //Default false. skipLevelOfDetail이 true이면 최대 화면 공간 오류를 충족시키는 타일 만 다운로드. 건너 뛰는 요인은 무시되고 원하는 타일 만로드.
-            // loadSiblings : false, //Default false. skipLevelOfDetail이 true 일 때 보이는 타일의 형제가 순회 중에 항상 다운로드되는지 여부를 결정
             maximumMemoryUsage : 768, //기본값 512.
             maximumScreenSpaceError: 1 //세분화 수준 향상 값 : 작을수록 디테일함. 기본값 16
         }));
@@ -202,18 +192,6 @@
             ts.pointCloudShading.attenuation = true;
             ts.pointCloudShading.eyeDomeLighting = true;
         });
-        // tileset.readyPromise.then(function(tileset) {
-        //     tileset.maximumScreenSpaceError = 16.0;
-        //     tileset.pointCloudShading.maximumAttenuation = undefined;
-        //     tileset.pointCloudShading.baseResolution = undefined;
-        //     tileset.pointCloudShading.geometricErrorScale = 1.0;
-        //     tileset.pointCloudShading.attenuation = true;
-        //     tileset.pointCloudShading.eyeDomeLighting = true;
-        //     tileset.show = true; //모델 보이기
-        //
-        // });
-
-
         // const options = {
         //     camera: viewer.scene.camera,
         //     canvas: viewer.scene.canvas,
@@ -239,30 +217,6 @@
         //             console.log(`${terminated ? "Terminate" : "End"} ${entry.type}`);
         //         });
         //     });
-
-        var url = 'http://175.116.181.23:9090/kmz/qq.kmz';
-        // $.ajax({
-        //    type:"GET",
-        //    url : url,
-        //     xhrFields: {
-        //         responseType: 'blob'
-        //     },
-        //     success: function(data, status, xhr) {
-        //         var a = document.createElement('a');
-        //         var url = window.URL.createObjectURL(data);
-        //         a.href = url;
-        //         a.download = info.assetName;
-        //         document.body.append(a);
-        //         a.click();
-        //         a.remove();
-        //         window.URL.revokeObjectURL(url);
-        //     },
-        //     error: function(request,status,error){
-        //         alert("처리에 실패하였습니다. \ncode:"+request.status+"\n"+ "error:"+error);
-        //     }
-        // });
-
-
     </script>
     <script>
         $(document).ready(function (){

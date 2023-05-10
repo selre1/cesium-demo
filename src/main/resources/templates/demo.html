@@ -5,411 +5,223 @@
 
 	<title>공간정보기술(주)</title>
 
-	 <script src="https://cesium.com/downloads/cesiumjs/releases/1.92/Build/Cesium/Cesium.js"></script>
-	 <link href="https://cesium.com/downloads/cesiumjs/releases/1.92/Build/Cesium/Widgets/widgets.css" rel="stylesheet">
-	 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css"/>
-	 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js"></script>
-	 <link th:href="@{assets/bootstrap/css/bootstrap.css}" rel="stylesheet" />
-	 <link th:href="@{assets/font-awesome/css/font-awesome.min.css}" rel="stylesheet" />
-	 <link th:href="@{assets/jstree/themes/default-dark/style.min.css}" rel="stylesheet" />
-	<link th:href="@{assets/BootSideMenu.css}" rel="stylesheet" />
-	<link th:href="@{assets/header_menu.css}" rel="stylesheet" />
 
-	<script th:src="@{assets/jquery.min.js}"></script>
-	<script th:src="@{assets/jquery-ui.min.js}"></script>
-	 <script th:src="@{assets/bootstrap/js/bootstrap.bundle.js}"></script>
+	 <link href="https://cesium.com/downloads/cesiumjs/releases/1.92/Build/Cesium/Widgets/widgets.css" rel="stylesheet"/>
+	 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"/>
+	 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+	 <link href='https://fonts.googleapis.com/css?family=Roboto:400,300' rel='stylesheet' type='text/css'>
 
-	<script th:src="@{assets/jstree/jstree.min.js}"></script>
-	<script th:src="@{assets/BootSideMenu.js}"></script>
-	<script th:src="@{assets/BuildingPopup.js}"></script>
-	<script th:src="@{assets/jstreeCustom.js}"></script>
+	 <link th:href="@{css/index.css}" rel="stylesheet" />
+	 <link th:href="@{css/sidebar.css}" rel="stylesheet" />
 
+
+	<script src="https://cesium.com/downloads/cesiumjs/releases/1.92/Build/Cesium/Cesium.js"></script>
+	 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+	 <script th:src="@{js/three.min.js}"></script>
+	 <script th:src="@{js/panolens.min.js}"></script>
+	 <script th:src="@{js/index.js}"></script>
+	 <script th:src="@{js/camera.js}"></script>
+
+	<style>
+		#panorama-container {
+			position: fixed;
+			display: flex;
+			width: 100%;
+			height: 100%;
+			top: 0;
+			background:rgb(8 50 62 / 43%);
+			transform: scale(0,0);
+			opacity: 0;
+			-webkit-transition: all 0.5s ease-out;
+			transition: all 0.5s ease-out;
+		}
+		#panorama-container.open {
+			opacity: 1;
+			transform: scale(1,1);
+		}
+		#progress-bar {
+			position: fixed;
+			top: 0;
+			width: 0;
+			height: 5px;
+			background-color: #fff;
+			transition: opacity 0.5s ease;
+		}
+		#main-container {
+			width: 100%;
+			height: 80%;
+			align-self: center;
+			background-color: #000;
+		}
+		.close {
+			width: 44px;
+			height: 44px;
+			position: absolute;
+			right: 0;
+			margin: 20px;
+			cursor: pointer;
+		}
+		.close > i {
+			color: #fff;
+			font-size: 44px;
+		}
+	</style>
 </head>
 <body>
-<section class="side_menu">
-	<nav>
-		<ul class="main_menu">
-			<li>
-				<span id="m_01_img"></span>
-				<a href="#" id="m_01" onclick="onClickMenu(this)">통합</a>
-			</li>
-			<li>
-				<span id="m_02_img"></span>
-				<a href="#" id="m_02" onclick="onClickMenu(this)">통합</a>
-			</li>
-			<li>
-				<span id="m_03_img"></span>
-				<a href="#" id="m_03" onclick="onClickMenu(this)">통합</a>
-			</li>
-			<li>
-				<span id="m_04_img"></span>
-				<a href="#" id="m_04" onclick="onClickMenu(this)">통합</a>
-			</li>
-			<li>
-				<span id="m_05_img"></span>
-				<a href="#" id="m_05" onclick="onClickMenu(this)">통합</a>
-			</li>
-			<li>
-				<span id="m_06_img"></span>
-				<a href="#" id="m_06" onclick="onClickMenu(this)">통합</a>
-			</li>
-		</ul>
-	</nav>
-</section>
-
-<div id="boot-side-menu" style="width:0px;">
-	<div class="container boot-side-wrapper">
-		<div class="row side-menu-title">
-			<div class="col">
-				<span>주소검색</span>
+<div class="lnb_wrap">
+	<h2><a href="#this" class="logoimg" style="display:inline-block;"></a></h2>
+	<!-- lnb -->
+	<ul class="lnb">
+		<li class="lm_01">
+			<a href="#" style="text-decoration: none">로드뷰</a>
+		</li>
+		<li class="lm_02">
+			<a href="#" style="text-decoration: none">항공뷰</a>
+		</li>
+		<div class="search">
+			<form>
+				<fieldset>
+					<legend>검색</legend>
+					<h4 class="mg_b10 mg_t10">본부</h4>
+					<select name="" class="size125">
+						<option value="">충북</option>
+					</select>
+					<h4 class="mg_b10 mg_t10">지사</h4>
+					<select name="" class="size125">
+						<option value="">보은</option>
+					</select>
+					<h4 class="mg_b10 mg_t10">저수지</h4>
+					<select name="" class="size125">
+						<option value="">보청 저수지</option>
+					</select>
+				</fieldset>
+			</form>
+		</div>
+		<div class="logogov"></div>
+	</ul>
+</div>
+<div class="base_map">
+	<ul>
+		<li>
+			<a href="javascript:" class="baseMap" data-value="0">
+				<span style="background: url('/image/basemap/openStreetMap.png');"></span>
+				<label>일반지도</label>
+			</a>
+		</li>
+		<li>
+			<a href="javascript:" class="baseMap" data-value="1">
+				<span class="on" style="background: url('/image/basemap/bingAerial.png');"></span>
+				<label>위성지도</label>
+			</a>
+		</li>
+		<li>
+			<a href="javascript:" class="baseMap" data-value="2">
+				<span style="background: url('/image/basemap/vworld.jpg');"></span>
+				<label>브이월드</label>
+			</a>
+		</li>
+	</ul>
+	<div>
+		<div style="padding: 12px 12px;color: white;font-size: smaller;display: flex;flex-direction: column;">
+			<div id="lon" class="mposition" style="">
+				<label>
+					longitude
+				</label>
+				<span>
+					-
+				</span>
+			</div>
+			<div id="lat" class="mposition" style="">
+				<label>
+					lattitude
+				</label>
+				<span>
+					-
+				</span>
+			</div>
+			<div id="zoomlevel" class="mposition" style="">
+				<label>
+					Zoom Height
+				</label>
+				<span>
+					-
+				</span>
 			</div>
 		</div>
-		<div class="row side-search-menu">
-			<div class="col">
-				<input type="text" id="geocoder" placeholder="Search">
-				<div class="side-search-icon">
-					<button style="background-color: rgba(255, 255, 255, 0.0); border: none;">
-						<i class="fa fa-search" aria-hidden="true"></i>
-					</button>
-				</div>
-			</div>
+		<div style="padding: 12px 12px;">
+			<button class="cesium-button" type="button" style="border: 1px solid #444;font-size: 15px;width: 100%;margin: 0;">
+				Camara Vertical
+			</button>
+			<button class="cesium-button" type="button" style="border: 1px solid #444;font-size: 15px;width: 100%;margin: 0;">
+				Camara 2
+			</button>
+			<button class="cesium-button" type="button" style="border: 1px solid #444;font-size: 15px;width: 100%;margin: 0;">
+				Camara 3
+			</button>
+			<button class="cesium-button" type="button" style="border: 1px solid #444;font-size: 15px;width: 100%;margin: 0;">
+				Camara 4
+			</button>
+			<button class="cesium-button" type="button" style="border: 1px solid #444;font-size: 15px;width: 100%;margin: 0;">
+				Camara 5
+			</button>
+			<button class="cesium-button" type="button" style="border: 1px solid #444;font-size: 15px;width: 100%;margin: 0;">
+				Distance
+			</button>
+			<button class="cesium-button" type="button" style="border: 1px solid #444;font-size: 15px;width: 100%;margin: 0;">
+				Area
+			</button>
 		</div>
-	</div>
-
-<!--
-	<div class="container boot-side-wrapper">
-		<div class="row side-menu-title">
-			<div class="col-4">
-				<span>Options</span>
-			</div>
-			<div class="col-8">
-				<div class="row">
-					<div class="col-4 pl-1">
-						<button id="v1" class="boot-side-btn" data-toggle="button">Texture</button>
-					</div>
-					<div class="col-4 pl-1">
-						<button id="v2" class="boot-side-btn" data-toggle="button">Shading</button>
-					</div>
-					<div class="col-4 pl-1">
-						<button id="v3" class="boot-side-btn" data-toggle="button">Energy</button>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
--->
-
-	<div class="container boot-side-wrapper">
-		<div class="row side-menu-title">
-			<div class="col">
-				<span>Search List</span>
-			</div>
-		</div>
-		<div class="row side-search-menu">
-			<div class="col">
-				<input type="text" id="plugins4_q" placeholder="Search">
-				<div class="side-search-icon">
-					<button style="background-color: rgba(255, 255, 255, 0.0); border: none;">
-						<i class="fa fa-search" aria-hidden="true"></i>
-					</button>
-				</div>
-			</div>
-		</div>
-		<div class="row side-jstree-menu">
-			<div id="jstree-div" class="ml-1"></div>
+		<div style="padding: 12px 12px;">
+			<input id="xpos" type="text" class="coordinate-input" placeholder="longitude" value="127.66967">
+			<input id="ypos" type="text" class="coordinate-input" placeholder="lattitude" value="36.47338">
+			<button id="move_position" class="cesium-button" type="button" style="border: 1px solid #444;font-size: 15px;width: 100%;margin: 0;">
+				Search
+			</button>
 		</div>
 	</div>
 </div>
-	<div id="cesiumContainer"></div>
+<div id="cesiumContainer"></div>
+<div class="cesiumContainer_sub"></div>
+<div id="panorama-container">
+	<div id="progress-bar"></div>
+	<div class="close">
+		<i class="material-icons">close</i>
+	</div>
+	<div id="main-container"></div>
+</div>
+<script>
+	var pviewer = new PANOLENS.Viewer({output: 'overlay', container: document.getElementById( 'main-container' )});
+	var panorama = new PANOLENS.ImagePanorama('panorama/insta_2.jpeg');
 
-	<script>
-		Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIzNzdkOGM0Mi0yMjcyLTQwZmItYWIyNy03MmFmNGViYTdhZjMiLCJpZCI6MTAwMTAsInNjb3BlcyI6WyJhc3IiLCJnYyJdLCJpYXQiOjE1NTU0NjI0ODF9.0rtvKxwWfm4NLaW8wWegXW83eOhIJohRCDyb5N5u8yk';
-		const vworld_key = 'EA23C739-35C5-3CA8-B630-82FA8355021E';
-		var layers = [
-			{layer : 'Base', tileType : 'png'},
-			{layer : 'gray', tileType : 'png'},
-			{layer : 'midnight', tileType : 'png'},
-			{layer : 'Hybrid', tileType : 'png'},
-			{layer : 'Satellite', tileType : 'jpeg'}
-		];
-
-		var selLayer = layers[0];
-
-		const viewer = new Cesium.Viewer('cesiumContainer', {
-			animation : false, //좌측 하단 둥근 위젯 노출여부
-			shouldAnimate : false, // 애니메이션과 같이 시간에 따른 변경되는 요소가 있어서 시뮬레이션 시간을 진행하려고 하면
-			selectionIndicator: false,
-			baseLayerPicker : false, // 지형선택 위젯 노출여부
-			fullscreenButton : false, // 전체화면 여부
-			vrButton : false, // vr 버튼 노출여부
-			geocoder : false, //지오 코더 위젯 노출여부. 주소와 경계표를 찾고 카메라를 그 위치에 보내는 위젯. 지오 코딩은
-			// Bing Maps Locations API를 사용하여 수행.
-			// geocoder: new Geocoder(), //이렇게 설정하면 검색 창이 노출됨. 찾고자 하는 지명 입력시 추천 검색어가 나타남
-			homeButton : false, // 홈 버튼 노출여부
-			infoBox : false, // 정보 또는 설명을 표시하는 위젯 노출여부 (건물정보 보이고 싶을때)
-			sceneModePicker : false, // 2D(평명 지도), 3D(구형 지구) 선택 위젯 노출여부
-			timeline : false, //timeline 위젯 노출여부
-			navigationHelpButton : false, // 도움말 버튼 노출여부
-			trackedEntity : undefined, // 현재 카메라에서 추적중인 Entity 인스턴스를 가져 오거나 설정. 더블클릭시 대상이 화면 가운데로 이동되는것 막기위해 undefined로 설정
-			selectionIndicator : false, // 클릭시 클릭위치 표시기 노출여부
-			projectionPicker : false, // 직각투영/원근법 투영 선택 위젯 노출여부
-			navigationInstructionsInitiallyVisible : false,
-			scene3DOnly : true, // GPU의 메모리를 절약하기 위해 3D로 렌더링
-			shadows : false, // 기본값 false. 모델과 지형에 태양의 그림자가 드리울지 여부(빛 조정은 이 속성에서 조절 안되고 그림자만 드리워짐)
-			// terrainShadows : Cesium.ShadowMode.RECEIVE_ONLY, //기본값 RECEIVE_ONLY. 지형이 태양으로부터 그림자를 던지거나 받는지 여부
-			useDefaultRenderLoop : false, // 자동 렌더링 여부
-			requestRenderMode : true, // scene을 업데이트하지 않으면 새 프레임을 렌더링하지 않도록 설정
-			maximumRenderTimeChange : Infinity, // requestRenderMode가 true인 경우 시물레이션이 변경됨에 따른 새 프레임 요청 간격(초)을 설정
-			// imageryProvider : new Cesium.WebMapTileServiceImageryProvider({
-			// 	url : `http://api.vworld.kr/req/wmts/1.0.0/${vworld_key}/${selLayer.layer}/{TileMatrix}/{TileRow}/{TileCol}.${selLayer.tileType}`,
-			// 	layer : 'Base',
-			// 	style : 'default',
-			// 	maximumLevel: 19
-			// 	//credit : new Cesium.Credit('VWorld Korea')
-			// })
-		});
-
-		function renderLoop() {
-			viewer.resize();
-			viewer.render();
-			Cesium.requestAnimationFrame(renderLoop);
-		}
-		Cesium.requestAnimationFrame(renderLoop);
-
-		// viewer.camera.setView({
-		// 	destination: new Cesium.Cartesian3(-3756512.992115552, 5003744.628566555, 4786760.616010258)
-		// });
-		//viewer.scene.screenSpaceCameraController.maximumZoomDistance = 100000;
-
-		$( '#boot-side-menu' ).BootSideMenu({
-			side: 'right',
-			width: '385px',
-			pushBody: false
-		});
-		$('#cesiumContainer').height($( window ).innerHeight());
-
-		$( '#jstree-div' ).jstreeCustom({
-			url: '/urbanmap/building/get3DBuildingList.ajax',
-			map: Cesium
-		});
-
-		var to = false;
-		$('#plugins4_q').keyup(function() {
-			if (to) {
-				clearTimeout(to);
-			}
-
-			// 키 입력후 일정시간이 지나면 현재까지 입력된 글자를 가지고 jstree search를 실행합니다.
-			to = setTimeout(function() {
-				var v = $('#plugins4_q').val();
-				$('#jstree-div').jstree('search', v);
-			}, 250);
-		});
-
-		$('.side-search-icon').click(function(){
-			var dd = searchAddr($('#geocoder').val());
-			console.log(dd);
-		})
-	//	function Geocoder(){}
-	//	Geocoder.prototype.geocode
-		function searchAddr(input){
-			var queryString = 'https://nominatim.openstreetmap.org/search';
-			var resource = new Cesium.Resource({
-				url: queryString,
-				queryParameters: {
-					format: 'json',
-					q: input
-				}
-			});
-
-			return resource.fetchJson().then(function (results) {
-				var bboxDegrees;
-				return results.map(function (resultObject) {
-					bboxDegrees = resultObject.boundingbox;
-					return {
-						displayName: resultObject.display_name,
-						destination: Cesium.Rectangle.fromDegrees(
-								bboxDegrees[2],
-								bboxDegrees[0],
-								bboxDegrees[3],
-								bboxDegrees[1]
-						),
-						lon : resultObject.lon,
-						lat : resultObject.lat
-					};
-				});
-			});
-		}
-
-		function resi() {
-			// 상단 탭바 높이를 계산하여 Cesium Map 높이를 설정
-			// 화면 가득채우기
-			var a = $('#cesiumContainer'),
-					height = $( window ).innerHeight();
-			a.height( height );
-		};
-
-		$(window).on('resize', function(){
-			resi()
-		});
-
-
-
-		function onClickMenu(obj){
-
-			console.log(obj)
-		}
-	</script>
-	<script type="text/javascript">
-
-
-	 viewer.entities.add({
-		 	id: 'p1',
-		    position: Cesium.Cartesian3.fromDegrees(127.67490, 36.47745),
-		     point: {
-		      show: true, // default
-		      color: Cesium.Color.RED, // default: WHITE
-		      pixelSize: 10, // default: 1
-		      outlineColor: Cesium.Color.RED, // default: BLACK
-		      outlineWidth: 3, // default: 0
-		    },
-		   /* billboard :{
-		    	 image: "/image/camera.png",
-		    	 scale: 0.1,
-				color: new Cesium.Color(255, 0, 0, 1)
-		    },*/
-		    label:{
-		      text : "로드뷰",
-		      font: "15px Helvetica",
-		      fillColor: Cesium.Color.WHITE,
-		      outlineWidth: 2,
-		      //horizontalOrigin :Cesium.HorizontalOrigin.RIGHT
-		      pixelOffset: new Cesium.Cartesian2(0, -30)
-		    }
-	 });
-
-	 viewer.entities.add({
-		 	id: 'a1',
-		    position: Cesium.Cartesian3.fromDegrees(127.67286, 36.47592),
-		 point: {
-			 show: true, // default
-			 color: Cesium.Color.RED, // default: WHITE
-			 pixelSize: 10, // default: 1
-			 outlineColor: Cesium.Color.RED, // default: BLACK
-			 outlineWidth: 3, // default: 0
-		 },
-		   /* billboard :{
-		    	 image: "/image/airplane.png",
-		    	 scale: 0.1,
-					color: new Cesium.Color(255, 0, 0, 1)
-		    },*/
-		    label:{
-		      text : "항공뷰",
-		      font: "15px Helvetica",
-		      fillColor: Cesium.Color.WHITE,
-		      outlineWidth: 2,
-		      //horizontalOrigin :Cesium.HorizontalOrigin.RIGHT
-		      pixelOffset: new Cesium.Cartesian2(0, -30)
-		    }
-	 });
-
-
-	    // Fly the camera to San Francisco at the given longitude, latitude, and height.
-	 viewer.camera.flyTo({
-	      destination : Cesium.Cartesian3.fromDegrees(127.67, 36.48, 2000)
-	 });
-	 var handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
-	 handler.setInputAction(function (movement) {
-		  // Star burst on left mouse click.
-		 var pickedObject = viewer.scene.pick(movement.position);
-		 if(!Cesium.defined(pickedObject)){
-			 let panoramaDiv = document.getElementById("panorama");
-			 if(panoramaDiv !== null){
-				 panoramaDiv.remove();
-			 }
-			 return;
-		 }
-		 const width = 600;
-		 const height = 600;
-		 let left = (document.body.offsetWidth / 2) - (width / 2);
-		 let tops = (document.body.offsetHeight / 2) - (height / 2);
-		 left += window.screenLeft;
-		 if(pickedObject.id.id === 'p1'){
-			 window.open("https://my.matterport.com/show/?m=MVsuDfMpwbX", "PopupNew", `width=${width}, height=${height}, left=${left}, top=${tops}`);
-
-			  let htmlOverlay = document.createElement("div");
-			  htmlOverlay.id = "panorama";
-			  htmlOverlay.style.position = "absolute";
-
-			  htmlOverlay.style.top = `${tops}px`;
-			  htmlOverlay.style.left = `${left}px`;
-			  htmlOverlay.style.width = '600px';
-			  htmlOverlay.style.height = '600px';
-			  document.body.appendChild(htmlOverlay);
-			  pann();
-		 }else if(pickedObject.id.id === 'a1'){
-			 window.open("https://bell0226.synology.me/%EC%83%98%ED%94%8C/%EA%B3%B5%EA%B0%84%EC%A0%95%EB%B3%B4%EA%B8%B0%EC%88%A0/vtour/tour.html", "PopupNew", `width=${width}, height=${height}, left=${left}, top=${tops}`);
-		 }
-
-		}, Cesium.ScreenSpaceEventType.LEFT_CLICK);
-
-
-	function pann(){
-	 pannellum.viewer('panorama', {
-		 "default": {
-			 "firstScene": "circle",
-
-			 "sceneFadeDuration": 1000
-		 },
-
-		 "scenes": {
-			 "circle": {
-				 "title": "Mason Circle",
-				 "hfov": 110,
-				 "pitch": -3,
-				 "yaw": 117,
-				 "type": "cubemap",
-				 "cubeMap": [
-					 "/panorama/px.png",
-					 "/panorama/nx.png",
-					 "/panorama/py.png",
-					 "/panorama/ny.png",
-					 "/panorama/pz.png",
-					 "/panorama/nz.png",
-				 ],
-				 "hotSpots": [
-					 {
-						 "pitch": -2.1,
-						 "yaw": 132.9,
-						 "type": "scene",
-						 "text": "Spring House or Dairy",
-						 "sceneId": "house"
-					 }
-				 ]
-			 },
-
-			 "house": {
-				 "title": "Spring House or Dairy",
-				 "hfov": 110,
-				 "yaw": 5,
-				 "type": "equirectangular",
-				 "panorama": "/panorama/test222.png",
-				 "hotSpots": [
-					 {
-						 "pitch": -0.6,
-						 "yaw": 37.1,
-						 "type": "scene",
-						 "text": "Mason Circle",
-						 "sceneId": "circle",
-						 "targetYaw": -23,
-						 "targetPitch": 2
-					 }
-				 ]
-			 }
-		 }
-	 });
+	function onProgress(event){
+		progress = event.progress.loaded / event.progress.total * 100;
+		$('#progress-bar').css('width',`${progress}%`);
+		if ( progress === 100 ) $('#progress-bar').css('opacity', 0);
 	}
-	</script>
+	panorama.addEventListener( 'progress', onProgress);
 
+	pviewer.add( panorama );
+	$('#panorama-container').addClass('open');
+
+
+	function disposePanorama () {
+		panorama.dispose();
+		pviewer.remove( panorama );
+		panorama = undefined;
+	}
+
+	$('.close').on( 'click', function () {
+		disposePanorama();
+		$('#progress-bar').css('width',0);
+		$('#progress-bar').css('opacity',1);
+		$('#panorama-container').removeClass('open');
+	});
+
+
+</script>
+<script>
+
+</script>
 </body>
 </html>
