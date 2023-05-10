@@ -57,7 +57,20 @@ CameraUtil.flyToNormal = function(xyzArr, callback){
 }
 
 CameraUtil.screenCenterToDegrees = function() {
-    var cartographic = CameraUtil.screenCenterToCartographic();
+    var  cartographic = null;
+    var cartesian = null;
+
+    //장면 모드에 따라 처리방식이 다름
+    if (viewer.scene.mode == 3) { //3D
+        var windowPosition = new Cesium.Cartesian2(viewer.container.clientWidth / 2, viewer.container.clientHeight / 2);
+        var pickRay = viewer.scene.camera.getPickRay(windowPosition);
+        cartesian = viewer.scene.globe.pick(pickRay, viewer.scene);
+        if (Cesium.defined(cartesian)) {
+            cartographic = viewer.scene.globe.ellipsoid.cartesianToCartographic(cartesian);
+        }
+    } else if (viewer.scene.mode == 2) { //2D
+        cartographic = viewer.camera.positionCartographic;
+    }
 
     var longitude = Number(Cesium.Math.toDegrees(cartographic.longitude)); //라디안을 도(경위도) 단위로 변경
     var latitude = Number(Cesium.Math.toDegrees(cartographic.latitude)); //라디안을 도(경위도) 단위로 변경

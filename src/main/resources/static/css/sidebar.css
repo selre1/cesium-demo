@@ -166,7 +166,7 @@ fieldset{
     border: 1px solid #2c3341;
 }
 .size125 {
-    width: 125px !important;
+    width: 100%;
 }
 .mg_b10 {
     margin-bottom: 10px !important;

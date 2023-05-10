@@ -130,5 +130,10 @@ var viewer = viewer || {};
             var xyzArr = [parseFloat(xpos),parseFloat(ypos),800];
             CameraUtil.flyToNormal(xyzArr);
         });
+
+        $('#cameraVertical').click(function(){
+           var cp = CameraUtil.screenCenterToDegrees();
+           CameraUtil.flyToVertical(cp[0],cp[1]);
+        });
     });
 }( jQuery, window, document ));
