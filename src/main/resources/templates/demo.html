@@ -22,12 +22,13 @@
 	 <script th:src="@{js/panolens.min.js}"></script>
 	 <script th:src="@{js/index.js}"></script>
 	 <script th:src="@{js/camera.js}"></script>
+	 <script th:src="@{js/entity.js}"></script>
 
 	<style>
 		#panorama-container {
 			position: fixed;
-			display: flex;
-			width: 100%;
+		/*	display: flex;*/
+		/*	width: 100%;*/
 			height: 100%;
 			top: 0;
 			background:rgb(8 50 62 / 43%);
@@ -35,6 +36,9 @@
 			opacity: 0;
 			-webkit-transition: all 0.5s ease-out;
 			transition: all 0.5s ease-out;
+
+			width: calc(100% - 180px);
+			right: 0;
 		}
 		#panorama-container.open {
 			opacity: 1;
@@ -50,7 +54,7 @@
 		}
 		#main-container {
 			width: 100%;
-			height: 80%;
+			height: 100%;
 			align-self: center;
 			background-color: #000;
 		}

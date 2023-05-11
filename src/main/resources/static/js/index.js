@@ -113,6 +113,21 @@ var viewer = viewer || {};
             viewer.scene.requestRender();
         }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
 
+        viewer.mouseEventHandler.setInputAction(function(movement){
+            var cartesian = viewer.camera.pickEllipsoid(movement.position, viewer.scene.globe.ellipsoid);
+            if(Cesium.defined(cartesian)){
+                var cartographic = Cesium.Cartographic.fromCartesian(cartesian);
+                //Cesium.Ellipsoid.WGS84.cartesianToCartographic(cartesian); // 데카르트 -> 라디안(경위도), 높이(미터)
+                var longitudeInt = Cesium.Math.toDegrees(cartographic.longitude).toFixed(7); // 라디안 -> 도(경위도)
+                var latitudeInt = Cesium.Math.toDegrees(cartographic.latitude).toFixed(7); // 라디안 -> 도(경위도)
+                var heightInt = cartographic.height.toFixed(7); //m단위
+
+
+                console.log("도:"+longitudeInt+", "+latitudeInt+", "+heightInt);
+            }
+            viewer.scene.requestRender();
+        }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+
         viewer.camera.moveEnd.addEventListener(function () {
             var cameraPosition = viewer.scene.camera.positionWC;
             var ellipsoidPosition = viewer.scene.globe.ellipsoid.scaleToGeodeticSurface(cameraPosition);
@@ -135,5 +150,7 @@ var viewer = viewer || {};
            var cp = CameraUtil.screenCenterToDegrees();
            CameraUtil.flyToVertical(cp[0],cp[1]);
         });
+
+        viewer.loadGeojson();
     });
 }( jQuery, window, document ));
