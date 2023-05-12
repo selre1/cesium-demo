@@ -43,6 +43,7 @@ var viewer = viewer || {};
                  url : 'https://a.tile.openstreetmap.org/'
             })
         });
+
         function renderLoop() {
             viewer.resize();
             viewer.render();
@@ -115,18 +116,36 @@ var viewer = viewer || {};
 
         viewer.mouseEventHandler.setInputAction(function(movement){
             var cartesian = viewer.camera.pickEllipsoid(movement.position, viewer.scene.globe.ellipsoid);
+            var pickedObject = viewer.scene.pick(movement.position);
             if(Cesium.defined(cartesian)){
                 var cartographic = Cesium.Cartographic.fromCartesian(cartesian);
-                //Cesium.Ellipsoid.WGS84.cartesianToCartographic(cartesian); // 데카르트 -> 라디안(경위도), 높이(미터)
                 var longitudeInt = Cesium.Math.toDegrees(cartographic.longitude).toFixed(7); // 라디안 -> 도(경위도)
                 var latitudeInt = Cesium.Math.toDegrees(cartographic.latitude).toFixed(7); // 라디안 -> 도(경위도)
                 var heightInt = cartographic.height.toFixed(7); //m단위
-
-
                 console.log("도:"+longitudeInt+", "+latitudeInt+", "+heightInt);
+            }
+            if(Cesium.defined(pickedObject) && (pickedObject.id instanceof Cesium.Entity)){
+                handleEntitySelect(pickedObject.id);
             }
             viewer.scene.requestRender();
         }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+
+        function handleEntitySelect(entity){
+            if(entity.point) return;
+
+            if(viewer.activeEntity)
+                viewer.activeEntity.billboard.color = new Cesium.Color(1, 1, 1, 1);
+
+            viewer.activeEntity = entity;
+            viewer.activeEntity.billboard.color = Cesium.Color.DEEPPINK;
+
+            viewer.pviewer.setPanorama(entity.panorama);
+            viewer.flyTo(viewer.activeEntity);
+            if(!$('#panorama-container').hasClass('open') && !$('#cesiumContainer').hasClass('open')){
+                $('#panorama-container').addClass('open');
+                $('#cesiumContainer').addClass('open');
+            }
+        }
 
         viewer.camera.moveEnd.addEventListener(function () {
             var cameraPosition = viewer.scene.camera.positionWC;
@@ -151,6 +170,12 @@ var viewer = viewer || {};
            CameraUtil.flyToVertical(cp[0],cp[1]);
         });
 
-        viewer.loadGeojson();
+        $('.showView').click(function(){
+            if($('#panorama-container').hasClass('open')) return;
+            if(viewer.dataSources.length > 0){
+                viewer.dataSources.removeAll();
+            }
+            viewer.loadGeojson(this.dataset.value);
+        });
     });
 }( jQuery, window, document ));

@@ -23,6 +23,7 @@
 	 <script th:src="@{js/index.js}"></script>
 	 <script th:src="@{js/camera.js}"></script>
 	 <script th:src="@{js/entity.js}"></script>
+	 <script th:src="@{js/panolens-base.js}"></script>
 
 	<style>
 		#panorama-container {
@@ -78,10 +79,10 @@
 	<!-- lnb -->
 	<ul class="lnb">
 		<li class="lm_01">
-			<a href="#" style="text-decoration: none">로드뷰</a>
+			<a href="#" class="showView"  style="text-decoration: none" data-value="person">로드뷰</a>
 		</li>
 		<li class="lm_02">
-			<a href="#" style="text-decoration: none">항공뷰</a>
+			<a href="#" class="showView" style="text-decoration: none" data-value="plane">항공뷰</a>
 		</li>
 		<div class="search">
 			<form>
@@ -97,7 +98,7 @@
 					</select>
 					<h4 class="mg_b10 mg_t10">저수지</h4>
 					<select name="" class="size125">
-						<option value="">보청 저수지</option>
+						<option value="127.66967,36.47338">보청 저수지</option>
 					</select>
 				</fieldset>
 			</form>
@@ -169,7 +170,7 @@
 			<button class="cesium-button" type="button" style="border: 1px solid #444;font-size: 15px;width: 100%;margin: 0;">
 				Camara 5
 			</button>
-			<button class="cesium-button" type="button" style="border: 1px solid #444;font-size: 15px;width: 100%;margin: 0;">
+			<button class="cesium-button" id="distance" type="button" style="border: 1px solid #444;font-size: 15px;width: 100%;margin: 0;">
 				Distance
 			</button>
 			<button class="cesium-button" type="button" style="border: 1px solid #444;font-size: 15px;width: 100%;margin: 0;">
@@ -186,7 +187,6 @@
 	</div>
 </div>
 <div id="cesiumContainer"></div>
-<div class="cesiumContainer_sub"></div>
 <div id="panorama-container">
 	<div id="progress-bar"></div>
 	<div class="close">
@@ -195,37 +195,138 @@
 	<div id="main-container"></div>
 </div>
 <script>
-	var pviewer = new PANOLENS.Viewer({output: 'overlay', container: document.getElementById( 'main-container' )});
-	var panorama = new PANOLENS.ImagePanorama('panorama/insta_2.jpeg');
+	$(document).ready(function() {
 
-	function onProgress(event){
-		progress = event.progress.loaded / event.progress.total * 100;
-		$('#progress-bar').css('width',`${progress}%`);
-		if ( progress === 100 ) $('#progress-bar').css('opacity', 0);
+
+		//거리측정 부분
+		var points = [];
+		var totalDistance = 0;
+		var startMarker = null;
+		var handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
+		var pointEntity = null;
+		var polylineEntity = null;
+		var distanceLabel = "";
+
+		$('#distance').click(function () {
+
+		//마우스 왼쪽클릭 시
+		handler.setInputAction(function (click) {
+			var windowPosition = new Cesium.Cartesian2(click.position.x, click.position.y);
+			var pickRay = viewer.camera.getPickRay(windowPosition);
+			var intersection = viewer.scene.globe.pick(pickRay, viewer.scene);
+
+			if (Cesium.defined(intersection)) {
+				var point = intersection;
+
+				if (!startMarker) {
+					totalDistance = 0;
+					startMarker = addPointMarker(point, Cesium.Color.YELLOW);
+				} else {
+					addPointMarker(point, Cesium.Color.YELLOW);
+
+					var previousPoint = points[points.length - 1];
+					var distance = Cesium.Cartesian3.distance(previousPoint, point);
+					totalDistance += distance;
+
+					var polyline = viewer.entities.add({
+						polyline: {
+							positions: [previousPoint, point],
+							width: 2.0,
+							material: Cesium.Color.YELLOW
+						}
+					});
+
+
+					if (!distanceLabel) {
+						distanceLabel = viewer.entities.add({
+							label: {
+								show: false,
+								showBackground: true,
+								backgroundColor: Cesium.Color.WHITE,
+								font: '14px monospace',
+								fillColor: Cesium.Color.BLACK,
+								horizontalOrigin: Cesium.HorizontalOrigin.LEFT,
+								verticalOrigin: Cesium.VerticalOrigin.TOP,
+								pixelOffset: new Cesium.Cartesian2(15, 0)
+							}
+						});
+					}
+					distanceLabel.label.show = true;
+					distanceLabel.position = point;
+					distanceLabel.label.text = '거리: ' + totalDistance.toFixed(2) + 'm';
+				}
+				points.push(point);
+			}
+		}, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+
+
+		//마우스 오른쪽 클릭 시
+		handler.setInputAction(function (click) {
+
+			if (polylineEntity) {                       // 마우스 선 지우기
+				viewer.entities.remove(polylineEntity); //이어지지 않은 선 제거
+				polylineEntity = null;
+
+			}
+
+			distanceLabel.label.text = '총 거리: ' + totalDistance.toFixed(2) + 'm';
+
+
+			// 기타 초기화 작업
+			startMarker = null;
+			points = [];
+			totalDistance = 0;
+
+		}, Cesium.ScreenSpaceEventType.RIGHT_CLICK);
+
+		//마우스 움직일 때
+		handler.setInputAction(function (movement) {
+			var cartesian = viewer.camera.pickEllipsoid(movement.endPosition, viewer.scene.globe.ellipsoid); //클릭한 곳의 위치좌표
+
+			if (cartesian) {
+				if (!pointEntity) {
+					pointEntity = addPointMarker(cartesian, Cesium.Color.YELLOW);
+				} else {
+					pointEntity.position = cartesian;
+				}
+
+				if (points.length > 0) {
+					var previousPoint = points[points.length - 1];
+					var positions = [previousPoint, cartesian];
+
+					if (polylineEntity) {
+						polylineEntity.polyline.positions = positions;
+					} else {
+						polylineEntity = addPolyline(positions, Cesium.Color.YELLOW);
+					}
+				}
+			}
+		}, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
+	})
+
+
+	function addPointMarker(position, color) {
+		return viewer.entities.add({
+			position: position,
+			point: {
+				pixelSize: 7,
+				color: color,
+				outlineColor: Cesium.Color.ORANGE,
+				outlineWidth: 2
+			}
+		});
 	}
-	panorama.addEventListener( 'progress', onProgress);
 
-	pviewer.add( panorama );
-	$('#panorama-container').addClass('open');
-
-
-	function disposePanorama () {
-		panorama.dispose();
-		pviewer.remove( panorama );
-		panorama = undefined;
+	function addPolyline(positions, color) {
+		return viewer.entities.add({
+			polyline: {
+				positions: positions,
+				width: 2.0,
+				material: color
+			}
+		});
 	}
-
-	$('.close').on( 'click', function () {
-		disposePanorama();
-		$('#progress-bar').css('width',0);
-		$('#progress-bar').css('opacity',1);
-		$('#panorama-container').removeClass('open');
 	});
-
-
-</script>
-<script>
-
 </script>
 </body>
 </html>
